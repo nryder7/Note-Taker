@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public')); //how does this display initial page?
+app.use(express.static('public'));
 //app.use('/static', express.static(path.join(__dirname, 'public'))) use when use Heroku?
 
 app.get("/notes", function (req, res) {
@@ -22,7 +22,6 @@ app.get("/api/notes", function (req, res) {
 app.post("/api/notes", function (req, res) {
 
     var newNote = req.body;
-    // newNote.id = JSON.stringify(dataBase.uuidv4());
     newNote.id = JSON.stringify(Math.random());
     dataBase.push(newNote);
 
@@ -36,18 +35,18 @@ app.post("/api/notes", function (req, res) {
 app.delete("/api/notes/:id", function (req, res) {
 
     dataBase = dataBase.filter(function (dataBase) {
-                return dataBase.id !== req.params.id;
-            });
-
-        fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(dataBase), function (err) {
-            if (err) throw err;
-            res.json(dataBase)
-        });    
-    })
-
-    app.get("*", function (req, res) {
-        res.sendFile(path.join(__dirname, "./public/index.html"));
+        return dataBase.id !== req.params.id;
     });
+
+    fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(dataBase), function (err) {
+        if (err) throw err;
+        res.json(dataBase)
+    });
+})
+
+app.get("*", function (req, res) {
+    res.sendFile(path.join(__dirname, "./public/index.html"));
+});
 
 app.listen(PORT, function () {
     console.log("App listening on PORT " + PORT);
